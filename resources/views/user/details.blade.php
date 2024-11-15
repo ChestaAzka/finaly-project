@@ -34,7 +34,7 @@
 
                         <!-- Rent Button -->
                         <div class="mt-6 flex justify-center">
-                            <a href="{{ route('user.details', $mobil->id) }}" class="inline-block px-8 py-3 bg-gradient-to-r from-green-400 to-green-600 text-black text-lg font-semibold rounded-full shadow-lg hover:scale-105 hover:from-green-600 hover:to-green-400 transition duration-300 transform">
+                            <a href="{{ route('user.transaksi', $mobil->id) }}" class="inline-block px-8 py-3 bg-gradient-to-r from-green-400 to-green-600 text-black text-lg font-semibold rounded-full shadow-lg hover:scale-105 hover:from-green-600 hover:to-green-400 transition duration-300 transform">
                                 Rent This Car
                             </a>
                         </div>

@@ -10,7 +10,7 @@ class MobilController extends Controller
     // Menampilkan daftar mobil
     public function index()
     {
-        $mobils = Mobil::all(); // Mengambil semua mobil
+        $mobils = Mobil::all();
         return view('admin.index', compact('mobils'));
     }
 
@@ -41,23 +41,11 @@ class MobilController extends Controller
         // Menyimpan gambar jika ada
         $gambarPath = null;
         if ($request->hasFile('gambar')) {
-            $gambarPath = $request->file('gambar')->store('public/mobil'); // Menyimpan gambar di folder public/mobil
+            $gambarPath = $request->file('gambar')->store('public/mobil');
         }
 
         // Menyimpan data mobil ke database
-        Mobil::create([
-            'nama' => $request->nama,
-            'merek' => $request->merek,
-            'tipe' => $request->tipe,
-            'tahun_produksi' => $request->tahun_produksi,
-            'no_polisi' => $request->no_polisi,
-            'kapasitas_penumpang' => $request->kapasitas_penumpang,
-            'transmisi' => $request->transmisi,
-            'jenis_bahan_bakar' => $request->jenis_bahan_bakar,
-            'harga_sewa_per_hari' => $request->harga_sewa_per_hari,
-            'status_ketersediaan' => $request->status_ketersediaan,
-            'gambar' => $gambarPath, // Menyimpan path gambar jika ada
-        ]);
+        Mobil::create(array_merge($validated, ['gambar' => $gambarPath]));
 
         return redirect()->route('admin.index')->with('success', 'Mobil berhasil ditambahkan!');
     }
@@ -84,23 +72,19 @@ class MobilController extends Controller
             'jenis_bahan_bakar' => 'required|in:bensin,solar,listrik',
             'harga_sewa_per_hari' => 'required|numeric',
             'status_ketersediaan' => 'required|in:tersedia,disewa,perbaikan',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validasi gambar
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         // Cek apakah gambar diupdate
         if ($request->hasFile('gambar')) {
-            // Hapus gambar lama jika ada
             if ($mobil->gambar) {
                 \Storage::delete($mobil->gambar);
             }
-
-            // Upload gambar baru
-            $gambarPath = $request->file('gambar')->store('public/mobil');
-            $mobil->gambar = $gambarPath;
+            $mobil->gambar = $request->file('gambar')->store('public/mobil');
         }
 
         // Update data mobil
-        $mobil->update($request->except('gambar')); // Jangan update gambar dari input
+        $mobil->update(array_merge($validated, ['gambar' => $mobil->gambar]));
 
         return redirect()->route('admin.index')->with('success', 'Mobil berhasil diperbarui!');
     }
@@ -108,12 +92,9 @@ class MobilController extends Controller
     // Menghapus data mobil
     public function destroy(Mobil $mobil)
     {
-        // Hapus gambar jika ada
         if ($mobil->gambar) {
             \Storage::delete($mobil->gambar);
         }
-
-        // Hapus data mobil
         $mobil->delete();
         
         return redirect()->route('admin.index')->with('success', 'Mobil berhasil dihapus!');
@@ -125,4 +106,5 @@ class MobilController extends Controller
         $mobil = Mobil::findOrFail($id);
         return view('user.details', compact('mobil'));
     }
+
 }

@@ -31,4 +31,9 @@ class Mobil extends Model
         'kapasitas_penumpang' => 'integer', // Menyimpan kapasitas penumpang sebagai integer
     ];
 
+    // Mendefinisikan relasi dengan transaksi (jika ada)
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }
