@@ -13,12 +13,18 @@ return new class extends Migration
     {
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('mobil_id')->constrained()->onDelete('cascade'); // Mobil yang disewa
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Pengguna yang menyewa
-            $table->integer('rental_days'); // Durasi sewa
-            $table->decimal('total_cost', 10, 2); // Total biaya sewa
-            $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('pending'); // Status transaksi
-            $table->timestamps();
+            $table->foreignId('mobil_id')  // Foreign key to 'mobil' table
+                ->constrained()             // Automatically references 'id' in 'mobils' table
+                ->onDelete('cascade');      // Delete transactions if the car is deleted
+
+            $table->foreignId('user_id')  // Foreign key to 'users' table
+                ->constrained()             // Automatically references 'id' in 'users' table
+                ->onDelete('cascade');      // Delete transactions if the user is deleted
+
+            $table->integer('rental_days'); // Duration of rental in days
+            $table->decimal('total_cost', 10, 2); // Total rental cost (in currency)
+            $table->enum('status', ['disewa', 'tidak disewa', 'di perbaiki'])->default('disewa'); // Transaction status
+            $table->timestamps(); // Created at and updated at timestamps
         });
     }
 
@@ -27,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transaksis');
+        Schema::dropIfExists('transaksis');  // Drop the 'transaksis' table when rolling back
     }
 };

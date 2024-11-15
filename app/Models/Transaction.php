@@ -9,32 +9,32 @@ use App\Models\User;
 class Transaction extends Model
 {
     // Define the table name if it doesn't follow Laravel's convention
-    protected $table = 'transaksis';
+    protected $table = 'transaksis';  // This is optional, only needed if your table doesn't follow Laravel's naming convention.
 
     // Fillable attributes for mass assignment
     protected $fillable = [
-        'mobil_id',
-        'user_id',
-        'rental_days',
-        'total_cost',
-        'status',
+        'mobil_id',    // foreign key to Mobil table
+        'user_id',     // foreign key to User table
+        'rental_days', // duration of rental in days
+        'total_cost',  // total rental cost
+        'status',      // status of the transaction
     ];
 
-    // Define casting for the attributes
+    // Define casting for attributes
     protected $casts = [
-        'total_cost' => 'decimal:2', // total_cost as decimal with two decimal points
-        'rental_days' => 'integer',  // rental_days as integer
+        'total_cost' => 'decimal:2',  // Cast total_cost to a decimal with two decimal points
+        'rental_days' => 'integer',   // Cast rental_days to an integer
     ];
 
-    // Define the relationship with Mobil model (each transaction belongs to a mobil)
+    // Define the relationship with the Mobil model (each transaction belongs to one mobil)
     public function mobil()
     {
-        return $this->belongsTo(Mobil::class);
+        return $this->belongsTo(Mobil::class);  // Belongs to relationship
     }
 
-    // Define the relationship with User model (each transaction is made by a user)
+    // Define the relationship with the User model (each transaction belongs to one user)
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);  // Belongs to relationship
     }
 }

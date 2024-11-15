@@ -41,11 +41,15 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
 
     // Route untuk melakukan CRUD mobil (menggunakan resource route, namun tanpa index, create, dan edit)
     Route::resource('mobil', MobilController::class)->except(['index', 'create', 'edit']);
+
+    // Explicitly add the destroy route (optional)
+    Route::delete('/mobil/{mobil}', [MobilController::class, 'destroy'])->name('admin.destroy');
 });
 
 // Route untuk melihat detail mobil
-Route::get('/mobil/{id}/details', [TransaksiController::class, 'show'])->name('user.details');
+Route::get('/user/details/{id}', [MobilController::class, 'show'])->name('user.details');
 
-// Route untuk melihat total transaksi mobil
-Route::get('/mobil/{id}/transaksi', [TransaksiController::class, 'transaksi'])->name('user.transaksi');
-Route::post('/mobil/{id}/transaksi', [TransaksiController::class, 'processTransaction'])->name('user.transaksi.process');
+// Route untuk menampilkan halaman transaksi
+Route::get('/user/transaksi/{id}', [TransaksiController::class, 'index'])->name('transaksi.index')->middleware('auth');
+
+Route::post('booking', [TransaksiController::class, 'transaksi'])->name('booking');

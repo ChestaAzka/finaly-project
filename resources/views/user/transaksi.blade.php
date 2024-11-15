@@ -21,7 +21,7 @@
                         <!-- Redirect to Index Page after 3 seconds -->
                         <script>
                             setTimeout(function() {
-                                window.location.href = "{{ route('index') }}";
+                                window.location.href = "{{ route('dashboard') }}";
                             }, 3000);
                         </script>
                     @else
@@ -46,13 +46,15 @@
                         </div>
 
                         <!-- Transaksi Form -->
-                        <form action="{{ route('user.transaksi', $mobil->id) }}" method="POST" class="space-y-6">
+                        <form action="{{ route('booking') }}" method="post" class="space-y-6">
                             @csrf
+                            <!-- Hidden Mobil ID -->
+                            <input type="hidden" name="mobil_id" value="{{ $mobil->id }}">
 
                             <!-- Rental Duration Input -->
                             <div class="flex flex-col space-y-2">
                                 <label for="rental_days" class="text-lg font-semibold text-gray-800">Durasi Sewa (Hari)</label>
-                                <input type="number" id="rental_days" name="rental_days" min="1" required class="w-full p-4 border border-gray-300 rounded-lg shadow-sm" placeholder="Masukkan jumlah hari">
+                                <input type="number" id="rental_days_input" name="rental_days" min="1" required class="w-full p-4 border border-gray-300 rounded-lg shadow-sm" placeholder="Masukkan jumlah hari">
                             </div>
 
                             <!-- Total Cost Display -->
@@ -75,7 +77,7 @@
 
     <!-- JavaScript to dynamically calculate total cost -->
     <script>
-        document.getElementById('rental_days').addEventListener('input', function () {
+        document.getElementById('rental_days_input').addEventListener('input', function () {
             const pricePerDay = {{ $mobil->harga_sewa_per_hari }};
             const days = parseInt(this.value) || 0;
             const totalCost = pricePerDay * days;

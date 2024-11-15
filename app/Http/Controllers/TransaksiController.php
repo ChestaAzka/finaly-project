@@ -3,50 +3,77 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Transaction;  // Ensure you have the Transaction model
 use Illuminate\Support\Facades\DB;
 use App\Models\Mobil;
+use App\Models\Transaction; // Transaction model
+use Illuminate\Support\Facades\Auth; // For authenticated user
 
 class TransaksiController extends Controller
 {
-    // Menampilkan halaman transaksi untuk mobil
-    public function transaksi($id)
+
+    public function index($id)
     {
         $mobil = Mobil::findOrFail($id);
-        return view('user.transaksi', compact('mobil'));
+        return view("user.transaksi", compact('mobil'));
+        
     }
 
-    // Proses transaksi untuk mobil
-    public function processTransaction(Request $request, $id)
+    // Method to show a specific transaction
+    public function show($id)
     {
-        $mobil = Mobil::findOrFail($id);
+        // Fetch the transaction by its ID
+        $transaction = Transaction::findOrFail($id);
+        
+        // Return the view with the transaction data
+        return view('transaksi.show', compact('transaction'));
+    }
 
-        // Validasi input durasi sewa
-        $validated = $request->validate([
-            'rental_days' => 'required|integer|min:1',
-        ]);
+    // Display the transaction page for a specific car and process the transaction
+    public function transaksi(Request $request, $mobil)
+    {
+        // Fetch the car (mobil) by its ID
 
-        // Hitung total biaya
-        $totalCost = $mobil->harga_sewa_per_hari * $validated['rental_days'];
-
-        // Mulai transaksi
-        DB::beginTransaction();
-        try {
-            // Buat catatan transaksi
-            $transaction = $mobil->transactions()->create([
-                'rental_days' => $validated['rental_days'],
-                'total_cost' => $totalCost,
-                'status' => 'pending', // Status dapat diubah sesuai kebutuhan
+        // If the request is a POST request, process the transaction
+        if ($request->isMethod('post')) {
+            // Validate the input rental days
+            $validated = $request->validate([
+                'rental_days' => 'required|integer|min:1', // Ensure the rental days is a valid positive integer
             ]);
 
-            // Update status ketersediaan mobil
-            $mobil->update(['status_ketersediaan' => 'disewa']);
+            // Calculate the total cost
+            $totalCost = $mobil->harga_sewa_per_hari * $validated['rental_days'];
 
-            DB::commit();
-            return redirect()->route('user.details', $mobil->id)->with('success', 'Transaksi berhasil dibuat!');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Gagal melakukan transaksi.');
+            // Begin a database transaction to ensure data integrity
+            DB::beginTransaction();
+            try {
+                // Create a new transaction and associate it with the authenticated user
+                $transaction = Transaction::create([
+                    'mobil_id' => $mobil->id,
+                    'user_id' => Auth::id(), // Get the authenticated user's ID
+                    'rental_days' => $validated['rental_days'],
+                    'total_cost' => $totalCost,
+                    'status' => 'disewa', // Set initial status to "disewa" (rented)
+                ]);
+
+                // Update the car's availability status to "disewa"
+                $mobil->update(['status_ketersediaan' => 'disewa']);
+
+                // Commit the transaction if everything is successful
+                DB::commit();
+
+                // Redirect to a dashboard or list with success message
+                return redirect()->route('dashboard')->with('success', 'Transaksi berhasil dibuat!');
+            } catch (\Exception $e) {
+                // Rollback the transaction in case of an error
+                DB::rollBack();
+
+                // Return back with error message
+                return back()->with('error', 'Gagal melakukan transaksi: ' . $e->getMessage());
+            }
         }
+
+        // Return the view with the car data for transaction (for GET request)
+        return view('user.transaksi', compact('mobil'));
+
     }
 }

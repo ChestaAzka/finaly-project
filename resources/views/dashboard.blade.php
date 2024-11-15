@@ -27,7 +27,7 @@
                                         <p class="text-gray-600 mb-4">Harga Sewa: Rp {{ number_format($mobil->harga_sewa_per_hari, 0, ',', '.') }} /day</p>
 
                                         <!-- Button to Rent or View Details -->
-                                        <a href="{{ route('mobil.show', $mobil->id) }}" class="inline-block mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
+                                        <a href="{{ route('user.details', $mobil->id) }}" class="inline-block mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
                                             View Details
                                         </a>
                                     </div>
