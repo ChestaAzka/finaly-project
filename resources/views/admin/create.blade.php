@@ -125,7 +125,7 @@
 
                         <!-- Submit Button -->
                         <div class="flex justify-end">
-                            <button type="submit" class="px-6 py-3 bg-blue-600 text-black rounded-lg hover:bg-blue-700 transition-all">Simpan</button>
+                            <button type="submit" class="px-6 py-3 bg-blue-600 text-black rounded-lg hover:bg-blue-700 transition-all">Simpan Data nya</button>
                         </div>
                     </form>
                 </div>
