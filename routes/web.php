@@ -52,4 +52,12 @@ Route::get('/user/details/{id}', [MobilController::class, 'show'])->name('user.d
 // Route untuk menampilkan halaman transaksi
 Route::get('/user/transaksi/{id}', [TransaksiController::class, 'index'])->name('transaksi.index')->middleware('auth');
 
+Route::get('/user/transaksi/{id}', [TransaksiController::class, 'index'])->name('user.transaksi')->middleware('auth');
+
+
 Route::post('booking', [TransaksiController::class, 'transaksi'])->name('booking');
+
+Route::get('/dasboard', [TransaksiController::class,'succes'])->name('succes');
+
+Route::get('/cars', [MobilController::class, 'search'])->name('user.cars');
+

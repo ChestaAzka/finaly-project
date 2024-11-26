@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->string('merek');
+            $table->text('deskripsi');
             $table->string('tipe');
             $table->year('tahun_produksi');
             $table->string('no_polisi')->unique();

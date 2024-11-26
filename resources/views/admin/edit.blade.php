@@ -35,6 +35,15 @@
                                 @enderror
                             </div>
 
+                            <!-- Merek -->
+                            <div class="mb-4">
+                                <label for="merek" class="block text-gray-700 font-semibold">Merek</label>
+                                <input type="text" name="merek" id="merek" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" value="{{ old('merek') }}" required>
+                                @error('merek')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+
                             <!-- Tipe -->
                             <div class="mb-4">
                                 <label for="tipe" class="block text-gray-700 font-semibold">Tipe</label>

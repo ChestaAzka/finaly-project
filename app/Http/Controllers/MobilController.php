@@ -14,6 +14,23 @@ class MobilController extends Controller
         return view('admin.index', compact('mobils'));
     }
 
+    public function search(Request $request)
+{
+    $query = Mobil::query();
+
+    // Filter berdasarkan pencarian
+    if ($request->has('search')) {
+        $search = $request->search;
+        $query->where('nama', 'like', "%{$search}%")
+              ->orWhere('merek', 'like', "%{$search}%")
+              ->orWhere('tipe', 'like', "%{$search}%");
+    }
+
+    $mobils = $query->get();
+
+    return view('dashboard', compact('mobils'));
+}
+
     // Menampilkan form untuk menambahkan mobil baru
     public function create()
     {
@@ -27,6 +44,7 @@ class MobilController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'merek' => 'required|string|max:255',
+            'deskripsi' => 'required|max:255',
             'tipe' => 'required|string|max:255',
             'tahun_produksi' => 'required|integer',
             'no_polisi' => 'required|string|max:15',
@@ -39,13 +57,12 @@ class MobilController extends Controller
         ]);
 
         // Menyimpan gambar jika ada
-        $gambarPath = null;
         if ($request->hasFile('gambar')) {
-            $gambarPath = $request->file('gambar')->store('public/mobil');
+            $validated['gambar'] = $request->file('gambar')->store('public/mobil');
         }
 
         // Menyimpan data mobil ke database
-        Mobil::create(array_merge($validated, ['gambar' => $gambarPath]));
+        Mobil::create($validated);
 
         return redirect()->route('admin.index')->with('success', 'Mobil berhasil ditambahkan!');
     }
@@ -64,6 +81,7 @@ class MobilController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'merek' => 'required|string|max:255',
+            'deskripsi' => 'required|max:255',
             'tipe' => 'required|string|max:255',
             'tahun_produksi' => 'required|integer',
             'no_polisi' => 'required|string|max:15',
@@ -78,13 +96,13 @@ class MobilController extends Controller
         // Cek apakah gambar diupdate
         if ($request->hasFile('gambar')) {
             if ($mobil->gambar) {
-                \Storage::delete($mobil->gambar);
+                \Storage::delete($mobil->gambar); // Menghapus gambar lama
             }
-            $mobil->gambar = $request->file('gambar')->store('public/mobil');
+            $validated['gambar'] = $request->file('gambar')->store('public/mobil');
         }
 
         // Update data mobil
-        $mobil->update(array_merge($validated, ['gambar' => $mobil->gambar]));
+        $mobil->update($validated);
 
         return redirect()->route('admin.index')->with('success', 'Mobil berhasil diperbarui!');
     }
@@ -93,10 +111,10 @@ class MobilController extends Controller
     public function destroy(Mobil $mobil)
     {
         if ($mobil->gambar) {
-            \Storage::delete($mobil->gambar);
+            \Storage::delete($mobil->gambar); // Hapus file gambar
         }
         $mobil->delete();
-        
+
         return redirect()->route('admin.index')->with('success', 'Mobil berhasil dihapus!');
     }
 
@@ -106,5 +124,4 @@ class MobilController extends Controller
         $mobil = Mobil::findOrFail($id);
         return view('user.details', compact('mobil'));
     }
-
 }

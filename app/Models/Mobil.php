@@ -11,15 +11,16 @@ class Mobil extends Model
 
     // Tentukan kolom-kolom yang bisa diisi menggunakan mass-assignment
     protected $fillable = [
-        'nama', 
-        'merek', 
-        'tipe', 
-        'tahun_produksi', 
-        'no_polisi', 
-        'kapasitas_penumpang', 
-        'transmisi', 
-        'jenis_bahan_bakar', 
-        'harga_sewa_per_hari', 
+        'nama',
+        'merek',
+        'deskripsi',
+        'tipe',
+        'tahun_produksi',
+        'no_polisi',
+        'kapasitas_penumpang',
+        'transmisi',
+        'jenis_bahan_bakar',
+        'harga_sewa_per_hari',
         'status_ketersediaan',
         'foto_mobil', // Mengganti 'gambar' menjadi 'foto_mobil' sesuai dengan kolom yang ada di tabel
     ];
